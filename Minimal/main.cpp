@@ -934,6 +934,19 @@ protected:
     controllerPos = ovr::toGlm(rightHandPoseState.ThePose.Position);
     controllerSphere->draw(testShader);
 
+	// give server your head/hand position data
+	glm::mat4 handToWorld = controllerSphere->toWorld;
+
+	ovrPoseStatef headPoseState = trackState.HeadPose;
+	glm::mat4 headTranslate = glm::translate(glm::mat4(1.0f), (ovr::toGlm(headPoseState.ThePose.Position)));
+	glm::mat4 headRotate = glm::toMat4(ovr::toGlm(ovrQuatf(headPoseState.ThePose.Orientation)));
+	glm::mat4 headToWorld = headTranslate * headRotate * glm::mat4(1.0f);
+
+	client->updateClientInfo(headToWorld, handToWorld);
+
+
+
+
     //EVERY 5 SECONDS SPAWN NEW MISSILE
     double currTime = ovr_GetTimeInSeconds();
     currTime = currTime - startTime;

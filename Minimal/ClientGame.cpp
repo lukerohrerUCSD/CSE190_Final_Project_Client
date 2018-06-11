@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "ClientGame.h"
-
+#include <bitset>
 
 ClientGame::ClientGame(void)
 {
@@ -33,7 +33,7 @@ void ClientGame::sendActionPackets()
     Packet packet;
     packet.packet_type = ACTION_EVENT;
 
-	createPacket(packet.data);
+	//createPacket(packet.data);
 
     packet.serialize(packet_data);
 
@@ -42,7 +42,20 @@ void ClientGame::sendActionPackets()
 
 void ClientGame::sendPacketToServer()
 {
-	
+	// send action packet
+	const unsigned int packet_size = sizeof(Packet);
+	char packet_data[packet_size];
+
+	Packet packet;
+	packet.packet_type = ClientToServer;
+
+	//createPacket(packet.data);
+	packet.headMtx = clientState.headToWorld;
+	packet.handMtx = clientState.handToWorld;
+
+	packet.serialize(packet_data);
+
+	NetworkServices::sendMessage(network->ConnectSocket, packet_data, packet_size);
 }
 
 void ClientGame::handlePacketFromServer() 
@@ -60,29 +73,46 @@ void floatToBytes(char* bytes_temp, float f) {
 	memcpy(bytes_temp, floatAndChar.bytes, 4);
 }
 
-void copyMatrixToData(glm::mat4 matrix, char data[], int startingIndex) {
+void ClientGame::copyMatrixToData(glm::mat4 matrix, char data[], int startingIndex) {
+
+	int index = startingIndex;
 
 	for (int j = 0; j < 4; j++) {
 		for (int k = 0; k < 4; k++) {
 
 			float value = matrix[j][k];
 
-			//cout << value;
+			//std::cout << value;
 
 			char bytes_temp[4];
 			floatToBytes(&bytes_temp[0], value);
 			for (int l = 0; l < 4; l++) {
-				data[startingIndex++] = bytes_temp[l];
+				data[index] = bytes_temp[l];
+
+				//std::bitset<8> x(data[index]);
+				//std::cout << x;
+
+				index++;
 			}
 		}
+		//std::cout << std::endl;
 	}
+	//std::cout << std::endl;
+}
+
+void ClientGame::updateClientInfo(glm::mat4 headMtx, glm::mat4 handMtx)
+{
+	clientState.headToWorld = headMtx;
+	clientState.handToWorld = handMtx;
 }
 
 void ClientGame::createPacket(char data[])
 {
 	glm::mat4 headMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
+	//glm::mat4 headMatrix = clientState.headToWorld;
 
-	copyMatrixToData(headMatrix, data, 0);
+	//copyMatrixToData(headMatrix, data, 0);
+
 
 }
 
@@ -109,7 +139,8 @@ void ClientGame::update()
 
                 //printf("client received action event packet from server\n");
 
-                sendActionPackets();
+                //sendActionPackets();
+				sendPacketToServer();
 
                 break;
 

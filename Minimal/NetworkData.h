@@ -1,5 +1,6 @@
 #pragma once
 #include <string.h>
+#include <glm/glm.hpp>
 
 #define MAX_PACKET_SIZE 1000000
 
@@ -18,7 +19,9 @@ enum PacketTypes {
 struct Packet {
 
     unsigned int packet_type;
-	char data[256];
+	//char data[256];
+	glm::mat4 headMtx;
+	glm::mat4 handMtx;
 
     void serialize(char * data) {
         memcpy(data, this, sizeof(Packet));
