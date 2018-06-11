@@ -783,7 +783,7 @@ class ExampleApp : public RiftApp {
   GLuint testShader;
 
   Model * base;
-  glm::vec3 basePos = glm::vec3(0.0f, -0.5f, -1.0f);
+  glm::vec3 basePos = glm::vec3(0.0f, -0.75f, 0.0f);
   float baseRadius = 0.25f;
 
 
@@ -914,12 +914,12 @@ protected:
 		//cubeScene->render(projection, glm::inverse(headPose));
 
     //SKYBOXES
-    /*
+    
     glUseProgram(skyboxShader);
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "view"), 1, GL_FALSE, glm::value_ptr(glm::inverse(headPose)));
     skybox->draw(skyboxShader);
-    */
+    
 
 		client->update();
 		serverState = client->getServerState();
