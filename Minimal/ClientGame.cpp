@@ -20,7 +20,6 @@ ClientGame::ClientGame(void)
     NetworkServices::sendMessage(network->ConnectSocket, packet_data, packet_size);
 }
 
-
 ClientGame::~ClientGame(void)
 {
 }
@@ -53,16 +52,26 @@ void ClientGame::sendPacketToServer()
 	//createPacket(packet.data);
 	packet.headMtx = clientState.headToWorld;
 	packet.handMtx = clientState.handToWorld;
+	packet.flag = clientState.flag;
 
 	packet.serialize(packet_data);
 
 	NetworkServices::sendMessage(network->ConnectSocket, packet_data, packet_size);
 }
 
+void ClientGame::setClientState(float flag) {
+	clientState.flag = flag;
+}
+
+
 void ClientGame::handlePacketFromServer(Packet packet) 
 {
 	serverState.handToWorld = packet.handMtx;
 	serverState.headToWorld = packet.headMtx;
+
+	for (int i = 0; i < 32; i++) {
+		serverState.lines[i] = packet.lines[i];
+	}
 }
 
 ClientGame::stateInfo ClientGame::getServerState() {
@@ -152,7 +161,7 @@ void ClientGame::update()
 
 			case ServerToClient:
 
-				//handlePacketFromServer(packet);
+				handlePacketFromServer(packet);
 				serverState.headToWorld = packet.headMtx;
 				serverState.handToWorld = packet.handMtx;
 

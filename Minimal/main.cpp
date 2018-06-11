@@ -987,7 +987,27 @@ protected:
     glUseProgram(lineShader);
     glUniformMatrix4fv(glGetUniformLocation(lineShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(lineShader, "view"), 1, GL_FALSE, glm::value_ptr(glm::inverse(headPose)));
-    for (int i = 0; i < lines.size(); ++i) {
+	int flag = 33;
+	for (int i = 0; i < 32; i++) {
+		Line line;
+		line.startPos = serverState.lines[i++];
+		line.endPos = serverState.lines[i];
+
+		if (line.startPos.x == INT_MAX) break;
+
+		if (triggerHeld && detectCollision(line.endPos, controllerPos, controllerSize)) {
+			flag = i;
+
+			std::cout << flag << std::endl;
+
+			continue;
+		} 
+
+		lineSystem->draw(lineShader, line.startPos, line.endPos);
+	}
+	client->setClientState(flag);
+/*
+	for (int i = 0; i < lines.size(); ++i) {
       float timeAlive = currTime - lines[i].timeCreated;
       float progress = timeAlive / lines[i].lifeSpan;
       lines[i].endPos = lines[i].startPos + progress * (basePos - lines[i].startPos);
@@ -1005,6 +1025,7 @@ protected:
       }
       lineSystem->draw(lineShader, lines[i].startPos, lines[i].endPos);
     }
+	*/
 
     keyCallback();
 

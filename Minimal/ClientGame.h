@@ -15,6 +15,8 @@ public:
 	struct stateInfo {
 		glm::mat4 headToWorld;
 		glm::mat4 handToWorld;
+		glm::vec3 lines[32];
+		int flag;
 	};
 
 	ClientGame(void);
@@ -32,6 +34,7 @@ public:
 	void createPacket(char data[]);
 	void copyMatrixToData(glm::mat4 matrix, char data[], int startingIndex);
 	stateInfo getServerState();
+	void setClientState(float flag);
 
     char network_data[MAX_PACKET_SIZE];
 
