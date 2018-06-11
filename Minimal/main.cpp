@@ -17,6 +17,9 @@ limitations under the License.
 
 ************************************************************************************/
 
+#include "stdafx.h"
+#include "ClientGame.h"
+#include <process.h>
 
 #include <iostream>
 #include <memory>
@@ -805,6 +808,8 @@ class ExampleApp : public RiftApp {
 
   int score;
 
+  ClientGame * client;
+
 public:
 	ExampleApp() { }
 
@@ -833,6 +838,9 @@ protected:
     score = 0;
     currLifespan = 12;
     spawnFreq = 5;
+
+	client = new ClientGame();
+
 	}
 
 	void shutdownGl() override {
@@ -904,6 +912,9 @@ protected:
     glUniformMatrix4fv(glGetUniformLocation(skyboxShader, "view"), 1, GL_FALSE, glm::value_ptr(glm::inverse(headPose)));
     skybox->draw(skyboxShader);
     */
+
+		client->update();
+
 
     //RENDER BASE
     glUseProgram(testShader);
