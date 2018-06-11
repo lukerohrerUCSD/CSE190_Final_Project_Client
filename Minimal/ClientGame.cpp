@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "ClientGame.h"
 #include <bitset>
+#include <iostream>
 
 ClientGame::ClientGame(void)
 {
@@ -58,9 +59,14 @@ void ClientGame::sendPacketToServer()
 	NetworkServices::sendMessage(network->ConnectSocket, packet_data, packet_size);
 }
 
-void ClientGame::handlePacketFromServer() 
+void ClientGame::handlePacketFromServer(Packet packet) 
 {
+	serverState.handToWorld = packet.handMtx;
+	serverState.headToWorld = packet.headMtx;
+}
 
+ClientGame::stateInfo ClientGame::getServerState() {
+	return serverState;
 }
 
 void floatToBytes(char* bytes_temp, float f) {
@@ -140,15 +146,18 @@ void ClientGame::update()
                 //printf("client received action event packet from server\n");
 
                 //sendActionPackets();
-				sendPacketToServer();
+				//sendPacketToServer();
 
                 break;
 
 			case ServerToClient:
 
-				//handlePacketFromServer();
+				//handlePacketFromServer(packet);
+				serverState.headToWorld = packet.headMtx;
+				serverState.handToWorld = packet.handMtx;
 
-				//sendPacketToServer();
+
+				sendPacketToServer();
 
 				break;
 

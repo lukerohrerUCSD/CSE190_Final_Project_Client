@@ -126,13 +126,14 @@ void Cube::setUpCube() {
 }
 
 void Cube::setUpFaces() {
-
+	/*
   this->faces.push_back("vr_test_pattern.ppm");
   this->faces.push_back("vr_test_pattern.ppm");
   this->faces.push_back("vr_test_pattern.ppm");
   this->faces.push_back("vr_test_pattern.ppm");
   this->faces.push_back("vr_test_pattern.ppm");
   this->faces.push_back("vr_test_pattern.ppm");
+  */
 }
 
 unsigned int Cube::loadCubeMap(std::vector<const GLchar*> faces) {
@@ -184,7 +185,7 @@ void Cube::setUpSkybox() {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 
-  this->cubeMapTexture = loadCubeMap(faces);
+  //this->cubeMapTexture = loadCubeMap(faces);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -198,8 +199,8 @@ void Cube::draw(GLuint shaderProgram) {
   glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
 
   glBindVertexArray(VAO);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+  //glActiveTexture(GL_TEXTURE0);
+  //glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
   glDrawElements(GL_TRIANGLES, (GLsizei)this->indices.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glDepthMask(GL_TRUE);

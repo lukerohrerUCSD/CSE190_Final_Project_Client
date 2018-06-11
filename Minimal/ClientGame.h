@@ -12,7 +12,7 @@ class ClientGame
 {
 public:
 
-	struct clientInfo {
+	struct stateInfo {
 		glm::mat4 headToWorld;
 		glm::mat4 handToWorld;
 	};
@@ -20,16 +20,18 @@ public:
 	ClientGame(void);
 	~ClientGame(void);
 
-	clientInfo clientState;
+	stateInfo clientState;
+	stateInfo serverState;
 
 	ClientNetwork* network;
 
 	void sendActionPackets();
 	void sendPacketToServer();
-	void handlePacketFromServer();
+	void handlePacketFromServer(Packet packet);
 	void updateClientInfo(glm::mat4 headMtx, glm::mat4 handMtx);
 	void createPacket(char data[]);
 	void copyMatrixToData(glm::mat4 matrix, char data[], int startingIndex);
+	stateInfo getServerState();
 
     char network_data[MAX_PACKET_SIZE];
 

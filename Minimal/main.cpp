@@ -810,6 +810,11 @@ class ExampleApp : public RiftApp {
 
   ClientGame * client;
 
+  ClientGame::stateInfo serverState;
+
+  Cube * otherHead;
+  Cube * otherHand;
+
 public:
 	ExampleApp() { }
 
@@ -840,6 +845,9 @@ protected:
     spawnFreq = 5;
 
 	client = new ClientGame();
+
+	otherHead = new Cube();
+	otherHand = new Cube();
 
 	}
 
@@ -914,13 +922,20 @@ protected:
     */
 
 		client->update();
+		serverState = client->getServerState();
 
+		otherHead->toWorld = serverState.headToWorld;
+		otherHand->toWorld = serverState.handToWorld;
+		//otherHead->toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
 
     //RENDER BASE
     glUseProgram(testShader);
     glUniformMatrix4fv(glGetUniformLocation(testShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(testShader, "view"), 1, GL_FALSE, glm::value_ptr(glm::inverse(headPose)));
     base->draw(testShader);
+
+	otherHead->draw(testShader);
+	otherHand->draw(testShader);
 
 
     //RENDER CONTROLLER SPHERE
