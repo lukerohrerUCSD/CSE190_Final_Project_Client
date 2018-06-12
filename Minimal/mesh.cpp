@@ -5,7 +5,71 @@ Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> text
   this->indices = indices;
   this->textures = textures;
 
+  this->center();
   this->setUpMesh();
+
+}
+
+void Mesh::center() {
+	float xmin = vertices[0].Position.x;
+	float xmax = vertices[0].Position.x;
+	float ymin = vertices[0].Position.y;
+	float ymax = vertices[0].Position.y;
+	float zmin = vertices[0].Position.z;
+	float zmax = vertices[0].Position.z;
+
+	//Find min and max values.
+	for (int i = 1; i < vertices.size(); ++i) {
+		if (vertices[i].Position.x < xmin) {
+			xmin = vertices[i].Position.x;
+		}
+		if (vertices[i].Position.x > xmax) {
+			xmax = vertices[i].Position.x;
+		}
+		if (vertices[i].Position.y < ymin) {
+			ymin = vertices[i].Position.y;
+		}
+		if (vertices[i].Position.y > ymax) {
+			ymax = vertices[i].Position.y;
+		}
+		if (vertices[i].Position.z < zmin) {
+			zmin = vertices[i].Position.z;
+		}
+		if (vertices[i].Position.z > zmax) {
+			zmax = vertices[i].Position.z;
+		}
+	}
+
+	//Find middle values
+	float x_middle = (xmin + xmax) / 2;
+	xmin -= x_middle;
+	xmax -= x_middle;
+	float y_middle = (ymin + ymax) / 2;
+	ymin -= y_middle;
+	ymax -= y_middle;
+	float z_middle = (zmin + zmax) / 2;
+	zmin -= z_middle;
+	zmax -= z_middle;
+
+	for (unsigned int i = 0; i < vertices.size(); ++i) {
+		vertices[i].Position.x -= x_middle;
+		vertices[i].Position.y -= y_middle;
+		vertices[i].Position.z -= z_middle;
+	}
+
+	//Scale to 2x2x2 box
+	float currScale = std::max((zmax - zmin), std::max((ymax - ymin), (xmax - xmin)));
+	currScale = 2 / currScale;
+	//this->scale(currScale);
+	for (unsigned int i = 0; i < vertices.size(); ++i) {
+		vertices[i].Position.x *= currScale;
+		vertices[i].Position.y *= currScale;
+		vertices[i].Position.z *= currScale;
+	}
+
+
+	//current_Offset = glm::vec3(0.0f, 0.0f, 0.0f);
+	//scaleSize = 1.0f;
 }
 
 void Mesh::draw(GLuint shaderProgram) {
@@ -29,6 +93,9 @@ void Mesh::draw(GLuint shaderProgram) {
     glUniform1i(glGetUniformLocation(shaderProgram, (name + number).c_str()), i);
     // And finally bind the texture
     glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
+
+	//cout << "TEXTURE LOOP" << endl;
+
   }
 
   // Draw mesh

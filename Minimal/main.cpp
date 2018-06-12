@@ -787,7 +787,7 @@ class ExampleApp : public RiftApp {
   float baseRadius = 0.25f;
 
 
-  Model * controllerSphere;
+  Cube * controllerCube;
   glm::vec3 controllerPos = glm::vec3(0.0f);
   float controllerSize = 0.07f;
 
@@ -826,10 +826,13 @@ protected:
 		ovr_RecenterTrackingOrigin(_session);
 		//cubeScene = std::shared_ptr<ColorCubeScene>(new ColorCubeScene());
     skybox = new Skybox(false);
-    base = new Model(SPHERE_PATH);
+
+    base = new Model("./our_model/amethyst.obj");
     base->toWorld = glm::translate(glm::mat4(1.0f), basePos);
     base->toWorld = glm::scale(base->toWorld, glm::vec3(baseRadius));
-    controllerSphere = new Model(SPHERE_PATH);
+
+
+    controllerCube = new Cube();
     lineSystem = new LineSystem();
     skyboxShader = LoadShaders(SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH);
     lineShader = LoadShaders(LINE_VERTEX_SHADER_PATH, LINE_FRAGMENT_SHADER_PATH);
@@ -925,18 +928,20 @@ protected:
 		serverState = client->getServerState();
 
 		otherHead->toWorld = serverState.headToWorld;
+		otherHead->toWorld = glm::scale(otherHead->toWorld, glm::vec3(0.25f));
 		otherHand->toWorld = serverState.handToWorld;
-		//otherHead->toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
-
+		
     //RENDER BASE
     glUseProgram(testShader);
     glUniformMatrix4fv(glGetUniformLocation(testShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(testShader, "view"), 1, GL_FALSE, glm::value_ptr(glm::inverse(headPose)));
-    base->draw(testShader);
+	base->draw(testShader);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(8.0f);
 
 	otherHead->draw(testShader);
 	otherHand->draw(testShader);
-
 
     //RENDER CONTROLLER SPHERE
     double displayMidpointSeconds = ovr_GetPredictedDisplayTime(_session, 0);
@@ -945,12 +950,15 @@ protected:
     glm::mat4 translationMtx = glm::translate(glm::mat4(1.0f), (ovr::toGlm(rightHandPoseState.ThePose.Position)));
     glm::mat4 rotationMtx = glm::toMat4(ovr::toGlm(ovrQuatf(rightHandPoseState.ThePose.Orientation)));
     glm::mat4 scaleMtx = glm::scale(glm::mat4(1.0f), glm::vec3(controllerSize));
-    controllerSphere->toWorld = translationMtx * rotationMtx * scaleMtx * glm::mat4(1.0f);
+    controllerCube->toWorld = translationMtx * rotationMtx * scaleMtx * glm::mat4(1.0f);
     controllerPos = ovr::toGlm(rightHandPoseState.ThePose.Position);
-    controllerSphere->draw(testShader);
+    controllerCube->draw(testShader);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 
 	// give server your head/hand position data
-	glm::mat4 handToWorld = controllerSphere->toWorld;
+	glm::mat4 handToWorld = controllerCube->toWorld;
 
 	ovrPoseStatef headPoseState = trackState.HeadPose;
 	glm::mat4 headTranslate = glm::translate(glm::mat4(1.0f), (ovr::toGlm(headPoseState.ThePose.Position)));
@@ -958,9 +966,6 @@ protected:
 	glm::mat4 headToWorld = headTranslate * headRotate * glm::mat4(1.0f);
 
 	client->updateClientInfo(headToWorld, handToWorld);
-
-
-
 
     //EVERY 5 SECONDS SPAWN NEW MISSILE
     double currTime = ovr_GetTimeInSeconds();

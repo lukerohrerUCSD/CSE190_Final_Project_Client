@@ -75,7 +75,7 @@ Cube::~Cube() {
 
 void Cube::setUpCube() {
 
-  scaleFactor = 20.0f;
+  scaleFactor = 200.0f;
   float CUBESIZE = 0.005f;
 
   //Set up front side vertices

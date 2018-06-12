@@ -45,6 +45,7 @@ public:
   vector<Texture> textures;
 
   void draw(GLuint shaderProgram);
+  void center();
 
 private:
 
