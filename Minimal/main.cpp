@@ -34,6 +34,7 @@ limitations under the License.
 #include "Skybox.h"
 #include "LineSystem.h"
 #include "Pyramid.h"
+#include "SFML/Audio.hpp"
 
 #define __STDC_FORMAT_MACROS 1
 
@@ -494,7 +495,7 @@ public:
 		});
 		// Make the on screen window 1/4 the resolution of the render target
 		_mirrorSize = _renderTargetSize;
-		_mirrorSize /= 4;
+		_mirrorSize /= 2;
 	}
 
 protected:
