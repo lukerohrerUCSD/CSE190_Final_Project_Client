@@ -817,6 +817,10 @@ class ExampleApp : public RiftApp {
   Pyramid * otherHead;
   Cube * otherHand;
 
+  sf::SoundBuffer gameOverSB;
+  sf::SoundBuffer lineSpawnSB;
+  sf::SoundBuffer lineDeleteSB;
+
 public:
 	ExampleApp() { }
 
@@ -853,6 +857,15 @@ protected:
 
 	otherHead = new Pyramid();
 	otherHand = new Cube();
+
+	if (!gameOverSB.loadFromFile("./sounds/game_over.wav"))
+		cout << "ERROR LOADING SOUND" << endl;
+
+	if (!lineSpawnSB.loadFromFile("./sounds/line_spawned.wav"))
+		cout << "ERROR LOADING SOUND" << endl;
+
+	if (!lineDeleteSB.loadFromFile("./sounds/line_deleted.wav"))
+		cout << "ERROR LOADING SOUND" << endl;
 
 	}
 

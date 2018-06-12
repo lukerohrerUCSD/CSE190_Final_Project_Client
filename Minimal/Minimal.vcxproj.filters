@@ -141,4 +141,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="sounds\game_over.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="sounds\line_deleted.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="sounds\line_spawned.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
 </Project>
