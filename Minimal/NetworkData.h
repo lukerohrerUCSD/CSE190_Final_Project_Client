@@ -26,6 +26,9 @@ struct Packet {
 
 	int flag;
 
+	bool lineSpawn;
+
+	bool gameOver;
 
 	void serialize(char * data) {
 		memcpy(data, this, sizeof(Packet));

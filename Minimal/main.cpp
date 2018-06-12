@@ -821,6 +821,10 @@ class ExampleApp : public RiftApp {
   sf::SoundBuffer lineSpawnSB;
   sf::SoundBuffer lineDeleteSB;
 
+  sf::Sound sound;
+  bool lineSpawned;
+  bool gameOver;
+
 public:
 	ExampleApp() { }
 
@@ -831,41 +835,44 @@ protected:
 		glEnable(GL_DEPTH_TEST);
 		ovr_RecenterTrackingOrigin(_session);
 		//cubeScene = std::shared_ptr<ColorCubeScene>(new ColorCubeScene());
-    skybox = new Skybox(false);
+		skybox = new Skybox(false);
 
-    base = new Model(BASE_PATH);
-    base->toWorld = glm::translate(glm::mat4(1.0f), basePos);
-    base->toWorld = glm::scale(base->toWorld, glm::vec3(baseRadius));
+		base = new Model(BASE_PATH);
+		base->toWorld = glm::translate(glm::mat4(1.0f), basePos);
+		base->toWorld = glm::scale(base->toWorld, glm::vec3(baseRadius));
 
 
-    controllerCube = new Cube();
-    lineSystem = new LineSystem();
-    skyboxShader = LoadShaders(SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH);
-    lineShader = LoadShaders(LINE_VERTEX_SHADER_PATH, LINE_FRAGMENT_SHADER_PATH);
-    testShader = LoadShaders(TEST_VERTEX_SHADER_PATH, TEST_FRAGMENT_SHADER_PATH);
-    startTime = ovr_GetTimeInSeconds();
+		controllerCube = new Cube();
+		lineSystem = new LineSystem();
+		skyboxShader = LoadShaders(SKYBOX_VERTEX_SHADER_PATH, SKYBOX_FRAGMENT_SHADER_PATH);
+		lineShader = LoadShaders(LINE_VERTEX_SHADER_PATH, LINE_FRAGMENT_SHADER_PATH);
+		testShader = LoadShaders(TEST_VERTEX_SHADER_PATH, TEST_FRAGMENT_SHADER_PATH);
+		startTime = ovr_GetTimeInSeconds();
 
-    srand(time(NULL));
-    gameInProgress = false;
-    lineAdded = false;
-    triggerHeld = false;
-    score = 0;
-    currLifespan = 12;
-    spawnFreq = 5;
+		srand(time(NULL));
+		gameInProgress = false;
+		lineAdded = false;
+		triggerHeld = false;
+		score = 0;
+		currLifespan = 12;
+		spawnFreq = 5;
 
-	client = new ClientGame();
+		client = new ClientGame();
 
-	otherHead = new Pyramid();
-	otherHand = new Cube();
+		otherHead = new Pyramid();
+		otherHand = new Cube();
 
-	if (!gameOverSB.loadFromFile("./sounds/game_over.wav"))
-		cout << "ERROR LOADING SOUND" << endl;
+		lineSpawned = false;
+		gameOver = false;
 
-	if (!lineSpawnSB.loadFromFile("./sounds/line_spawned.wav"))
-		cout << "ERROR LOADING SOUND" << endl;
+		if (!gameOverSB.loadFromFile("./sounds/game_over.wav"))
+			cout << "ERROR LOADING SOUND" << endl;
 
-	if (!lineDeleteSB.loadFromFile("./sounds/line_deleted.wav"))
-		cout << "ERROR LOADING SOUND" << endl;
+		if (!lineSpawnSB.loadFromFile("./sounds/line_spawned.wav"))
+			cout << "ERROR LOADING SOUND" << endl;
+
+		if (!lineDeleteSB.loadFromFile("./sounds/line_deleted.wav"))
+			cout << "ERROR LOADING SOUND" << endl;
 
 	}
 
@@ -944,6 +951,20 @@ protected:
 
 		otherHead->toWorld = serverState.headToWorld;
 		otherHand->toWorld = serverState.handToWorld;
+		lineSpawned = serverState.lineSpawn;
+		gameOver = serverState.gameOver;
+
+		if (lineSpawned) {
+			//cout << "PLAYING SOUND" << endl;
+			sound.setBuffer(lineSpawnSB);
+			sound.play();
+		}
+
+		if (gameOver) {
+			sound.setBuffer(gameOverSB);
+			sound.play();
+		}
+		gameOver = false;
 		
     //RENDER BASE
     glUseProgram(testShader);
@@ -1016,8 +1037,10 @@ protected:
 
 		if (triggerHeld && detectCollision(line.endPos, controllerPos, controllerSize)) {
 			flag = i;
+			sound.setBuffer(lineDeleteSB);
+			sound.play();
 
-			std::cout << flag << std::endl;
+			//std::cout << flag << std::endl;
 
 			continue;
 		} 

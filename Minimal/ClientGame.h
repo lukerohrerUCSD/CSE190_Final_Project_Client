@@ -17,6 +17,8 @@ public:
 		glm::mat4 handToWorld;
 		glm::vec3 lines[32];
 		int flag;
+		bool lineSpawn;
+		bool gameOver;
 	};
 
 	ClientGame(void);

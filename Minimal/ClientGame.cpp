@@ -72,6 +72,9 @@ void ClientGame::handlePacketFromServer(Packet packet)
 	for (int i = 0; i < 32; i++) {
 		serverState.lines[i] = packet.lines[i];
 	}
+
+	serverState.lineSpawn = packet.lineSpawn;
+	serverState.gameOver = packet.gameOver;
 }
 
 ClientGame::stateInfo ClientGame::getServerState() {
