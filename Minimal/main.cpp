@@ -33,6 +33,7 @@ limitations under the License.
 #include "Cube.h"
 #include "Skybox.h"
 #include "LineSystem.h"
+#include "Pyramid.h"
 
 #define __STDC_FORMAT_MACROS 1
 
@@ -54,7 +55,7 @@ limitations under the License.
 #define TEST_VERTEX_SHADER_PATH "testShader.vert"
 #define TEST_FRAGMENT_SHADER_PATH "testShader.frag"
 
-#define SPHERE_PATH "../sphere2.obj"
+#define BASE_PATH "./our_model/amethyst.obj"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -812,7 +813,7 @@ class ExampleApp : public RiftApp {
 
   ClientGame::stateInfo serverState;
 
-  Cube * otherHead;
+  Pyramid * otherHead;
   Cube * otherHand;
 
 public:
@@ -827,7 +828,7 @@ protected:
 		//cubeScene = std::shared_ptr<ColorCubeScene>(new ColorCubeScene());
     skybox = new Skybox(false);
 
-    base = new Model("./our_model/amethyst.obj");
+    base = new Model(BASE_PATH);
     base->toWorld = glm::translate(glm::mat4(1.0f), basePos);
     base->toWorld = glm::scale(base->toWorld, glm::vec3(baseRadius));
 
@@ -849,7 +850,7 @@ protected:
 
 	client = new ClientGame();
 
-	otherHead = new Cube();
+	otherHead = new Pyramid();
 	otherHand = new Cube();
 
 	}
@@ -928,7 +929,6 @@ protected:
 		serverState = client->getServerState();
 
 		otherHead->toWorld = serverState.headToWorld;
-		otherHead->toWorld = glm::scale(otherHead->toWorld, glm::vec3(0.25f));
 		otherHand->toWorld = serverState.handToWorld;
 		
     //RENDER BASE
